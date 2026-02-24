@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vedant Ambigar | Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;
+700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stylesheet.css">
+<style>
+
+/* ══════════════════════════════════════════
+   HOME SECTION — ORIGINAL UNCHANGED
+══════════════════════════════════════════ */
+#home {
+  background-image: url('78485119-eaa6-40a6-ace1-af0876c35221.png');
+  background-repeat: no-repeat;
+  background-size: cover;background-position: center;
+  min-height: 80vh;
+}
+.container { text-align: center; color: white; padding: 20px; position: relative; }
+.profile-frame{
+ width:200px;  height:200px;border-radius:50%;
+ margin:0 auto 30px;  overflow:hidden;
+  border:6px solid white;   /* BORDER ADDED */
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  animation:bounce 2s infinite;
+}
+.profile-frame img{
+  width:100%; height:100%;object-fit:cover;display:block;
+}
+h1 { font-size: 3.9rem; margin-bottom: 10px; animation: fadeIn 1s; }
+h2 { font-size: 2.5rem; margin-bottom: 10px; animation: fadeIn 1s; }
+.subtitle { font-size: 1.9rem; opacity: 0.9; margin-bottom: 20px; animation: fadeIn 1.5s; }
+.btn {
+  display: inline-block; padding: 16px 40px; background: white;
+  color: #667eea; border-radius: 25px; text-decoration: none;
+  font-weight: bold; margin: 30px; transition: transform 0.5s; animation: fadeIn 2s;
+}
+.btn:hover { transform: scale(1.2); }
+.button {
+  position: absolute; top: 30px; display: inline-block; padding: 5px 12px;
+  background: white; color: #667eea; border-radius: 50px; text-decoration: none;
+  font-weight: bold; transition: transform 0.5s; animation: fadeIn 2s;
+}
+.button:hover { transform: scale(1.2); }
+.top1 { right: 20px; }.top2 { right: 80px; }
+.top3 { right: 140px; }.top4 { right: 200px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+</style>
+</head>
+<body>
+
+ 
+
+<!-- ════════════════════════════════════════
+     HOME — ORIGINAL UNCHANGED
+════════════════════════════════════════ -->
+<section id="home">
+  <div class="container">
+    <div class="profile-frame">
+   <a href="game.html" >  <img src="myimage.jpeg" alt="Description" width="190" height="190"></a>
+    </div>
+    <h1>Hi,i'm Vedant Ambigar</h1>
+    <div class="subtitle">BSc IT Student|Design • Code • Create</div>
+    <a href="#" class="btn">Download cv</a>
+    <a href="#contact" class="btn">Contact Me</a>  
+    <nav class="side-menu">
+      <a href="#home"     data-key="H">Home</a>
+      <a href="#about"    data-key="A">About</a>
+      <a href="#skills"   data-key="S">Skills</a>
+      <a href="#projects" data-key="P">Projects</a>
+      <a href="#contact"  data-key="C">Contact</a>
+    </nav>
+  </div>
+</section>
+<!-- ════════════════════════════════════════
+     ABOUT
+════════════════════════════════════════ -->
+<section id="about" class="section">
+
+  <div class="section-label">
+    <div class="label-line"></div>
+    <span class="label-num">01.</span> About Me
+  </div>
+
+  <div class="about-grid">
+
+    <!-- Left -->
+    <div class="about-left">
+      <h2 class="about-heading">
+        Inspired to<br>
+        <span class="cyan-stroke">Build</span> &<br>
+        <span class="cyan-fill">Create.</span>
+      </h2>
+
+      <p class="bio-text">
+        I'm <strong>Vedant Ambigar</strong>, a <span class="bio-accent">BSc IT student</span>
+ passionate about turning ideas into meaningful digital experiences. I thrive at the crossroads of design and development — where clean code
+ meets thoughtful interfaces.
+        <br><br>
+        Always experimenting, always learning. I believe every project is a chance to grow and leave something better than I found it.
+      </p>
+
+      <div class="quote-block">
+        <p class="quote-text">Design. Code. Create.<br>That's not just a tagline — it's how I think.</p>
+      </div>
+    </div>
+    <!-- Right -->
+    <div class="about-right">
+
+      <div class="stat-card">
+        <span class="stat-icon">🚀</span>
+        <span class="stat-num" data-target="10">0</span>
+        <span class="stat-label">Projects target</span>
+      </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════
+     SKILLS
+════════════════════════════════════════ -->
+<section id="skills" class="section">
+
+  <div class="section-label">
+    <div class="label-line"></div>
+    <span class="label-num">02.</span> Technologies
+  </div>
+
+  <h2 class="sec-heading">My <span class="cyan">Skill Set</span></h2>
+
+  <div class="skills-showcase">
+    <div class="tech-card">
+      <img src="html png.png" alt="HTML">
+      <span class="tech-name">HTML</span>
+      
+    </div>
+    <div class="tech-card">
+      <img src="css png.png" alt="CSS">
+      <span class="tech-name">CSS</span>
+      
+    </div>
+    <div class="tech-card">
+      <img src="jacascript png.png" alt="JavaScript">
+      <span class="tech-name">JavaScript</span>
+    
+    </div>
+    <div class="tech-card">
+      <img src="c++ png.png" alt="C++">
+      <span class="tech-name">C++</span>
+      
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════
+     PROJECTS
+════════════════════════════════════════ -->
+<section id="projects" class="section">
+
+  <div class="section-label">
+    <div class="label-line"></div>
+    <span class="label-num">03.</span> Work
+  </div>
+
+  <h2 class="sec-heading">Featured <span class="cyan">Projects</span></h2>
+
+  <div class="projects-grid">
+
+    <div class="project-card">
+      <div class="project-img-wrap">
+        <img src="WhatsApp Image 2026-01-28 at 12.21.30 AM.jpeg" alt="Student Management System">
+        <div class="project-overlay"></div>
+        <span class="project-num">01</span>
+      </div>
+      <div class="project-body">
+        <div class="project-name">Student Management System</div>
+        <div class="project-desc">A C based console application to manage student records, grades, and data efficiently.</div>
+        <div class="project-tags">
+          <span class="p-tag">C</span>
+          <span class="p-tag">documentation</span>
+        </div>
+        <a href="https://github.com/vedantambigar1/C-Programs/tree/main/practical-10%20project%20student%20management%20system" 
+class="project-link" target="_blank">View on GitHub</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-img-wrap">
+        <img src="WhatsApp Image 2026-01-28 at 12.38.00 AM.jpeg" alt="Portfolio Website">
+        <div class="project-overlay"></div>
+        <span class="project-num">02</span>
+      </div>
+      <div class="project-body">
+        <div class="project-name">Portfolio Website</div>
+        <div class="project-desc">A personal portfolio site showcasing projects, skills and contact info with a clean modern UI.</div>
+        <div class="project-tags">
+          <span class="p-tag">HTML</span>
+          <span class="p-tag">CSS</span>
+          <span class="p-tag">JavaScript</span>
+        </div>
+        <a href="#" class="project-link">View Project</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-img-wrap">
+        <img src="c++img.jpeg" alt="Inventory Management System">
+        <div class="project-overlay"></div>
+        <span class="project-num">03</span>
+      </div>
+      <div class="project-body">
+        <div class="project-name">Inventory Management System</div>
+        <div class="project-desc">A C++ application to track inventory, manage stock levels and generate simple reports.</div>
+        <div class="project-tags">
+          <span class="p-tag">C++</span>
+          <span class="p-tag">Documentation</span>
+ <span class="p-tag">Oops</span>
+        </div>
+        <a href="#" class="project-link">View Project</a>
+      </div>
+    </div>
+
+
+  <div class="project-card">
+      <div class="project-img-wrap">
+        <img src="Image0091.png" alt="blender 3d art work">
+        <div class="project-overlay"></div>
+        <span class="project-num">04</span>
+      </div>
+      <div class="project-body">
+        <div class="project-name">blender 3d art work</div>
+        <div class="project-desc">A showcase of cinematic 3D renders and interactive environments 
+blending creativity, lighting, and technical precision.</div>
+        <a href="blender%203d%20art%20work.html"
+ class="project-link">View Project</a>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ════════════════════════════════════════
+     CONTACT
+════════════════════════════════════════ -->
+<section id="contact" class="section contact-section">
+
+  <div class="section-label">
+    <div class="label-line"></div>
+    <span class="label-num">04.</span> Get In Touch
+  </div>
+
+  <div class="contact-hero">
+    <p class="contact-eyebrow">Don't be a stranger —</p>
+    <h2 class="contact-big-heading">Let's <br><span class="contact-gradient">Connect.</span></h2>
+    <p class="contact-sub">Whether it's a project, a collab, or just a hello — my inbox is always open.</p>
+  </div>
+
+  <div class="contact-grid">
+
+    <a href="https://www.instagram.com/_____vedha.____?igsh=MTVlbjZqdjVoY3pjZw==" class="contact-card" target="_blank">
+      <div class="contact-card-icon"><img src="insta.png" alt="Instagram"></div>
+      <div class="contact-card-info">
+        <span class="contact-card-label">Instagram</span>
+        <span class="contact-card-handle">@_____vedha.____</span>
+      </div>
+      <div class="contact-card-arrow">→</div>
+    </a>
+
+    <a href="https://github.com/vedantambigar1" class="contact-card" target="_blank">
+      <div class="contact-card-icon"><img src="github.png" alt="GitHub"></div>
+      <div class="contact-card-info">
+        <span class="contact-card-label">GitHub</span>
+        <span class="contact-card-handle">vedantambigar1</span>
+      </div>
+      <div class="contact-card-arrow">→</div>
+    </a>
+
+    <a href="https://discord.gg/6ASxgQKc" class="contact-card" target="_blank">
+      <div class="contact-card-icon"><img src="discord.png" alt="Discord"></div>
+      <div class="contact-card-info">
+        <span class="contact-card-label">Discord</span>
+        <span class="contact-card-handle">Join Server</span>
+      </div>
+      <div class="contact-card-arrow">→</div>
+    </a>
+
+    <a href="http://www.youtube.com/@friendlygamers4843" class="contact-card" target="_blank">
+      <div class="contact-card-icon"><img src="youtube.jpg" alt="YouTube"></div>
+      <div class="contact-card-info">
+        <span class="contact-card-label">YouTube</span>
+        <span class="contact-card-handle">@friendlygamers4843</span>
+      </div>
+      <div class="contact-card-arrow">→</div>
+    </a>
+   <a href="https://mail.google.com/mail/u/0/#inbox" class="contact-card" target="_blank">
+      <div class="contact-card-icon"><img src="mail.png.png" alt="Email"></div>
+      <div class="contact-card-info">
+        <span class="contact-card-label">Email</span>
+        <span class="contact-card-handle">vedantambigar1@</span>
+      </div>
+      <div class="contact-card-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="contact-ticker-wrap">
+    <div class="contact-ticker">
+      <span>DESIGN</span><span class="ticker-dot">✦</span>
+      <span>CODE</span><span class="ticker-dot">✦</span>
+      <span>CREATE</span><span class="ticker-dot">✦</span>
+      <span>DESIGN</span><span class="ticker-dot">✦</span>
+      <span>CODE</span><span class="ticker-dot">✦</span>
+      <span>CREATE</span><span class="ticker-dot">✦</span>
+      <span>DESIGN</span><span class="ticker-dot">✦</span>
+      <span>CODE</span><span class="ticker-dot">✦</span>
+      <span>CREATE</span><span class="ticker-dot">✦</span>
+      <span>DESIGN</span><span class="ticker-dot">✦</span>
+      <span>CODE</span><span class="ticker-dot">✦</span>
+      <span>CREATE</span><span class="ticker-dot">✦</span>
+      <span>DESIGN</span><span class="ticker-dot">✦</span>
+ <span>CODE</span><span class="ticker-dot">✦</span>
+      <span>CREATE</span><span class="ticker-dot">✦</span>
+    </div>
+  </div>
+</section>
+<footer class="footer">
+  <p>© 2026 Vedant Ambigar | All Rights Reserved</p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+// ── Intersection Observer for all animated elements ──────────────────────
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    el.classList.add('visible');
+
+    // Skill bars (about)
+    el.querySelectorAll && el.querySelectorAll('.skill-bar-fill').forEach((bar, i) => {
+      setTimeout(() => { bar.style.transform = `scaleX(${bar.dataset.width})`; }, 300 + i * 130);
+    });
+
+    // Tech bars (skills section)
+    el.querySelectorAll && el.querySelectorAll('.tech-bar').forEach((bar, i) => {
+      setTimeout(() => { bar.style.transform = `scaleX(${bar.dataset.width})`; }, 400 + i * 100);
+    });
+    // Counter
+    const counterEl = el.querySelector && el.querySelector('[data-target]');
+    if (counterEl && !counterEl.dataset.done) {
+      counterEl.dataset.done = '1';
+      animateCounter(counterEl, counterEl.dataset.target);
+    }
+  });
+}, { threshold: 0.18 });
+
+// Observe every animated element
+document.querySelectorAll(
+  '.section-label, .sec-heading, .about-heading, .bio-text, .quote-block, ' +
+  '.stat-card, .skills-card, .tech-card, .project-card, ' +
+  '.contact-wrap, .social-row'
+).forEach(el => io.observe(el));
+// ── Counter animation ────────────────────────────────────────────────────
+function animateCounter(el, target) {
+  const end = parseInt(target);
+  const dur = 1400; let start = null;
+  const step = (ts) => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(eased * end) + (p < 1 ? '' : '+');
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = end + '+';
+  };
+  setTimeout(() => requestAnimationFrame(step), 300);
+}
+// ── Mouse parallax on background ────────────────────────────────────────
+document.addEventListener('mousemove', (e) => {
+  const x = e.clientX / window.innerWidth;
+  const y = e.clientY / window.innerHeight;
+  document.body.style.setProperty('--mx', x);
+  document.body.style.setProperty('--my', y);
+});
+// ── Submit handler ────────────────────────────────────────────────────────
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.submit-btn');
+  btn.textContent = '✓ Message Sent!';
+  btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+  setTimeout(() => {
+    btn.textContent = 'Send Message ✉';
+    btn.style.background = '';
+    e.target.reset();
+  }, 3000);
+}
+</script>
+</body>
+</html>

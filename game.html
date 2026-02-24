@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOID — Game Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:    #0a0e17;
+    --bg2:   #0d1220;
+    --bg3:   #111827;
+    --panel: #141d2e;
+    --border:#1e2d45;
+    --accent:#3b82f6;
+    --accent2:#06b6d4;
+    --glow:  rgba(59,130,246,0.35);
+    --text:  #e2e8f0;
+    --muted: #64748b;
+    --danger:#ef4444;
+    --success:#22c55e;
+    --warn:  #f59e0b;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;z-index:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;pointer-events:none}
+  .wrapper{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:40px 24px}
+  header{text-align:center;margin-bottom:48px}
+  header h1{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:900;letter-spacing:.2em;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titlePulse 4s ease-in-out infinite}
+  @keyframes titlePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3) drop-shadow(0 0 20px var(--accent))}}
+  header p{color:var(--muted);margin-top:8px;letter-spacing:.15em;font-size:.8rem}
+  .games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:40px}
+  .game-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;text-align:center}
+  .game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}
+  .game-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 40px var(--glow)}
+  .game-card:hover::before{opacity:1}
+  .game-card.active{border-color:var(--accent);box-shadow:0 0 30px var(--glow)}
+  .game-card .icon{font-size:2.5rem;margin-bottom:12px;display:block}
+  .game-card h3{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.1em;margin-bottom:6px}
+  .game-card p{color:var(--muted);font-size:.7rem;line-height:1.5}
+  #arena{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:32px;min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  #arena::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(59,130,246,.07) 0%,transparent 60%);pointer-events:none}
+  .placeholder{text-align:center;color:var(--muted)}
+  .placeholder .big{font-size:5rem;margin-bottom:16px}
+  .placeholder p{font-size:.85rem;letter-spacing:.1em}
+  .game-wrap{width:100%;max-width:640px;text-align:center}
+  .score-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:12px 20px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:.75rem;letter-spacing:.1em}
+  .score-val{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--accent)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 28px;font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+  .btn:hover{background:var(--accent2);transform:scale(1.05)}
+  .btn.secondary{background:var(--bg3);border:1px solid var(--border);color:var(--text)}
+  .btn.secondary:hover{border-color:var(--accent)}
+  /* SNAKE */
+  #snakeCanvas{border:1px solid var(--border);border-radius:8px;display:block;margin:0 auto 16px;background:var(--bg)}
+  .snake-controls{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px}
+  .ctrl-row{display:flex;gap:6px}
+  .ctrl-btn{width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1.1rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+  .ctrl-btn:hover{background:var(--accent);border-color:var(--accent)}
+  /* MEMORY */
+  .memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:360px;margin:0 auto 16px}
+  .mem-card{aspect-ratio:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:1.6rem;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center}
+  .mem-card.revealed{background:var(--panel);border-color:var(--accent)}
+  .mem-card.matched{background:rgba(34,197,94,.15);border-color:var(--success)}
+  .mem-card:hover:not(.matched):not(.revealed){border-color:var(--accent);transform:scale(1.05)}
+  /* REACTION */
+  #reaction-pad{width:280px;height:200px;border-radius:16px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.85rem;letter-spacing:.1em;transition:background .3s,border-color .3s;margin:0 auto 20px;user-select:none;background:var(--bg3)}
+  #reaction-pad.wait{background:rgba(239,68,68,.15);border-color:var(--danger);color:var(--danger)}
+  #reaction-pad.go{background:rgba(34,197,94,.2);border-color:var(--success);color:var(--success)}
+  #reaction-pad.done{background:rgba(59,130,246,.15);border-color:var(--accent);color:var(--accent)}
+  /* GUESS */
+  .guess-input-wrap{display:flex;gap:10px;justify-content:center;margin:20px 0}
+  .guess-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:1.2rem;padding:10px 16px;width:120px;text-align:center;outline:none;transition:border-color .2s}
+  .guess-input:focus{border-color:var(--accent)}
+  .hint-text{font-size:1.2rem;margin:12px 0;min-height:32px}
+  .attempts-dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--border);transition:background .3s}
+  .dot.used{background:var(--warn)}
+  .dot.win{background:var(--success)}
+  .dot.lose{background:var(--danger)}
+  /* WHACK */
+  .mole-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:300px;margin:0 auto 16px}
+  .mole-hole{aspect-ratio:1;background:var(--bg);border:2px solid var(--border);border-radius:50%;font-size:2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;user-select:none}
+  .mole-hole.active{border-color:var(--warn);background:rgba(245,158,11,.1);animation:moleHop .2s ease}
+  @keyframes moleHop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+  .mole-hole.hit{border-color:var(--danger);background:rgba(239,68,68,.2)}
+  .timer-bar-wrap{background:var(--bg3);border-radius:4px;height:6px;margin:12px 0;overflow:hidden}
+  .timer-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .1s linear}
+  .game-msg{font-family:'Orbitron',monospace;font-size:1rem;letter-spacing:.1em;margin:12px 0;min-height:28px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <h1>VOID</h1>
+    <p>// GAME HUB — SELECT YOUR ARENA //</p>
+  </header>
+  <div class="games-grid">
+    <div class="game-card" onclick="selectGame('snake')"><span class="icon">🐍</span><h3>SERPENT</h3><p>Classic snake. Eat. Grow. Survive.</p></div>
+    <div class="game-card" onclick="selectGame('memory')"><span class="icon">🧠</span><h3>NEURAL MATCH</h3><p>Flip & match pairs. Test your memory.</p></div>
+    <div class="game-card" onclick="selectGame('reaction')"><span class="icon">⚡</span><h3>REFLEX</h3><p>Tap when green. How fast are you?</p></div>
+    <div class="game-card" onclick="selectGame('guess')"><span class="icon">🎯</span><h3>CODE BREAKER</h3><p>Guess the number in 7 tries.</p></div>
+    <div class="game-card" onclick="selectGame('whack')"><span class="icon">🔨</span><h3>MOLE STRIKE</h3><p>Whack the moles before time runs out.</p></div>
+  </div>
+  <div id="arena">
+    <div class="placeholder"><div class="big">🎮</div><p>SELECT A GAME ABOVE TO BEGIN</p></div>
+  </div>
+</div>
+<script>
+const arena=document.getElementById('arena');
+const cards=document.querySelectorAll('.game-card');
+const stopFns=[];
+function stopAll(){stopFns.forEach(f=>f());stopFns.length=0}
+function selectGame(id){
+  cards.forEach((c,i)=>c.classList.toggle('active',['snake','memory','reaction','guess','whack'][i]===id));
+  stopAll();games[id]();
+}
+
+/* SNAKE */
+function gameSnake(){
+  const SIZE=20,COLS=20,ROWS=16;
+  let snake,dir,food,score,interval,running;
+  arena.innerHTML=`<div class="game-wrap">
+    <div class="score-bar"><span>SCORE</span><span class="score-val" id="sScore">0</span><button class="btn" onclick="startSnake()">START</button></div>
+    <canvas id="snakeCanvas" width="${COLS*SIZE}" height="${ROWS*SIZE}"></canvas>
+    <div class="snake-controls">
+      <div class="ctrl-row"><button class="ctrl-btn" onclick="snakeDir(0,-1)">▲</button></div>
+      <div class="ctrl-row"><button class="ctrl-btn" onclick="snakeDir(-1,0)">◀</button><button class="ctrl-btn" onclick="snakeDir(0,1)">▼</button><button class="ctrl-btn" onclick="snakeDir(1,0)">▶</button></div>
+    </div>
+    <div class="game-msg" id="sMsg">PRESS START</div>
+  </div>`;
+  const canvas=document.getElementById('snakeCanvas');
+  const ctx=canvas.getContext('2d');
+  function drawGrid(){ctx.fillStyle='#0a0e17';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='#1e2d45';ctx.lineWidth=.5;for(let x=0;x<COLS;x++){ctx.beginPath();ctx.moveTo(x*SIZE,0);ctx.lineTo(x*SIZE,ROWS*SIZE);ctx.stroke()}for(let y=0;y<ROWS;y++){ctx.beginPath();ctx.moveTo(0,y*SIZE);ctx.lineTo(COLS*SIZE,y*SIZE);ctx.stroke()}}
+  function draw(){drawGrid();ctx.fillStyle='#3b82f6';ctx.shadowColor='#3b82f6';ctx.shadowBlur=12;ctx.fillRect(food.x*SIZE+2,food.y*SIZE+2,SIZE-4,SIZE-4);ctx.shadowBlur=0;snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#06b6d4':`rgba(59,130,246,${.9-i*.03})`;ctx.fillRect(s.x*SIZE+1,s.y*SIZE+1,SIZE-2,SIZE-2)})}
+  function placeFood(){do{food={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))}
+  window.startSnake=function(){snake=[{x:10,y:8},{x:9,y:8},{x:8,y:8}];dir={x:1,y:0};score=0;running=true;document.getElementById('sScore').textContent=0;document.getElementById('sMsg').textContent='USE ARROWS OR BUTTONS';placeFood();draw();clearInterval(interval);interval=setInterval(tick,140)};
+  function tick(){if(!running)return;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){running=false;clearInterval(interval);document.getElementById('sMsg').textContent=`GAME OVER — SCORE: ${score}`;return}snake.unshift(head);if(head.x===food.x&&head.y===food.y){score++;document.getElementById('sScore').textContent=score;placeFood()}else snake.pop();draw()}
+  window.snakeDir=function(x,y){if(!running)return;if(x!==0&&dir.x!==0)return;if(y!==0&&dir.y!==0)return;dir={x,y}};
+  function onKey(e){const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(map[e.key]){e.preventDefault();snakeDir(...map[e.key])}}
+  document.addEventListener('keydown',onKey);
+  stopFns.push(()=>{clearInterval(interval);document.removeEventListener('keydown',onKey)});
+  draw();
+}
+
+/* MEMORY */
+function gameMemory(){
+  const emojis=['🚀','💎','🌙','⚡','🔥','🎯','🌊','💻'];
+  let flipped=[],matched=0,moves=0,lockBoard=false,cards2;
+  function init(){
+    cards2=[...emojis,...emojis].sort(()=>Math.random()-.5);
+    flipped=[];matched=0;moves=0;lockBoard=false;render();
+  }
+  function render(){
+    arena.innerHTML=`<div class="game-wrap">
+      <div class="score-bar"><span>MOVES</span><span class="score-val" id="mMoves">0</span><button class="btn" onclick="memInit()">RESTART</button><span>PAIRS</span><span class="score-val" id="mPairs">0/8</span></div>
+      <div class="memory-grid" id="memGrid"></div>
+      <div class="game-msg" id="mMsg">FIND ALL PAIRS</div>
+    </div>`;
+    window.memInit=init;
+    const grid=document.getElementById('memGrid');
+    cards2.forEach((emoji,i)=>{
+      const el=document.createElement('div');el.className='mem-card';el.dataset.idx=i;el.dataset.emoji=emoji;el.textContent='';
+      el.onclick=()=>flip(el);grid.appendChild(el);
+    });
+  }
+  function flip(el){
+    if(lockBoard||el.classList.contains('matched')||flipped.includes(el))return;
+    el.textContent=el.dataset.emoji;el.classList.add('revealed');flipped.push(el);
+    if(flipped.length===2){moves++;document.getElementById('mMoves').textContent=moves;lockBoard=true;
+      if(flipped[0].dataset.emoji===flipped[1].dataset.emoji){flipped.forEach(c=>{c.classList.remove('revealed');c.classList.add('matched')});matched++;document.getElementById('mPairs').textContent=`${matched}/8`;flipped=[];lockBoard=false;if(matched===8)document.getElementById('mMsg').textContent=`🎉 SOLVED IN ${moves} MOVES!`}
+      else setTimeout(()=>{flipped.forEach(c=>{c.textContent='';c.classList.remove('revealed')});flipped=[];lockBoard=false},900);
+    }
+  }
+  init();
+}
+
+/* REACTION */
+function gameReaction(){
+  let state='idle',t,results=[];
+  arena.innerHTML=`<div class="game-wrap">
+    <div class="score-bar"><span>BEST</span><span class="score-val" id="rBest">—</span><span>AVG</span><span class="score-val" id="rAvg">—</span><span>ROUNDS</span><span class="score-val" id="rRounds">0</span></div>
+    <div id="reaction-pad" onclick="reactClick()">CLICK TO START</div>
+    <div class="game-msg" id="rMsg">Click the pad to begin</div>
+  </div>`;
+  const pad=document.getElementById('reaction-pad');
+  let timeout;
+  window.reactClick=function(){
+    if(state==='idle'){state='wait';pad.className='wait';pad.textContent='WAIT FOR GREEN...';document.getElementById('rMsg').textContent="Don't click yet!";timeout=setTimeout(()=>{state='go';t=Date.now();pad.className='go';pad.textContent='CLICK NOW!'},1500+Math.random()*3000)}
+    else if(state==='wait'){clearTimeout(timeout);state='idle';pad.className='';pad.textContent='TOO EARLY — TRY AGAIN';document.getElementById('rMsg').textContent='';setTimeout(()=>{pad.textContent='CLICK TO START'},1200)}
+    else if(state==='go'){const rt=Date.now()-t;state='done';results.push(rt);pad.className='done';pad.textContent=rt+'ms';const best=Math.min(...results);const avg=Math.round(results.reduce((a,b)=>a+b)/results.length);document.getElementById('rBest').textContent=best+'ms';document.getElementById('rAvg').textContent=avg+'ms';document.getElementById('rRounds').textContent=results.length;document.getElementById('rMsg').textContent=rt<200?'⚡ LIGHTNING FAST!':rt<300?'👍 GREAT REFLEXES':rt<500?'👌 NOT BAD':'Keep practicing!';setTimeout(()=>{state='idle';pad.className='';pad.textContent='CLICK TO START AGAIN'},2000)}
+  };
+  stopFns.push(()=>clearTimeout(timeout));
+}
+
+/* GUESS */
+function gameGuess(){
+  let secret,attempts,gameOver;
+  function init(){secret=Math.floor(Math.random()*100)+1;attempts=[];gameOver=false;render()}
+  function render(){
+    arena.innerHTML=`<div class="game-wrap">
+      <div class="score-bar"><span>RANGE</span><span class="score-val">1—100</span><span>TRIES LEFT</span><span class="score-val" id="gLeft">7</span></div>
+      <div class="attempts-dots" id="gDots">${Array(7).fill('<div class="dot"></div>').join('')}</div>
+      <div class="guess-input-wrap"><input class="guess-input" id="gInput" type="number" min="1" max="100" placeholder="??"><button class="btn" onclick="makeGuess()">GUESS</button></div>
+      <div class="hint-text" id="gHint">Guess a number between 1 and 100</div>
+      <div class="game-msg" id="gMsg"></div>
+      <button class="btn secondary" onclick="guessInit()" style="margin-top:12px">NEW GAME</button>
+    </div>`;
+    window.guessInit=init;
+    document.getElementById('gInput').addEventListener('keydown',e=>{if(e.key==='Enter')makeGuess()});
+  }
+  window.makeGuess=function(){
+    if(gameOver)return;
+    const val=parseInt(document.getElementById('gInput').value);
+    if(!val||val<1||val>100){document.getElementById('gHint').textContent='Enter a number 1–100!';return}
+    attempts.push(val);const left=7-attempts.length;document.getElementById('gLeft').textContent=left;
+    const dots=document.querySelectorAll('.dot');const hint=document.getElementById('gHint');const msg=document.getElementById('gMsg');
+    if(val===secret){gameOver=true;dots.forEach((d,i)=>{if(i<attempts.length)d.classList.add('win')});hint.textContent=`✅ Correct! The number was ${secret}`;msg.textContent=`🎉 Found in ${attempts.length} guess${attempts.length>1?'es':''}!`}
+    else{dots[attempts.length-1].classList.add(left===0?'lose':'used');const diff=Math.abs(val-secret);const temp=diff<5?'🔥 VERY HOT!':diff<15?'♨️ WARM':diff<30?'❄️ COLD':'🧊 FREEZING';hint.textContent=`${val<secret?'📈 TOO LOW':'📉 TOO HIGH'} — ${temp}`;if(left===0){gameOver=true;msg.textContent=`💀 GAME OVER — It was ${secret}`}}
+    document.getElementById('gInput').value='';document.getElementById('gInput').focus();
+  };
+  init();
+}
+
+/* WHACK */
+function gameWhack(){
+  let score,misses,timeLeft,activeMole,interval,timerInt,running;
+  function init(){
+    score=0;misses=0;timeLeft=30;running=true;activeMole=-1;
+    render();clearInterval(interval);clearInterval(timerInt);
+    interval=setInterval(showMole,800);timerInt=setInterval(tick,1000);
+  }
+  function render(){
+    arena.innerHTML=`<div class="game-wrap">
+      <div class="score-bar"><span>SCORE</span><span class="score-val" id="wScore">0</span><span>MISSES</span><span class="score-val" id="wMisses">0</span><span>TIME</span><span class="score-val" id="wTime">30s</span></div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="wBar" style="width:100%"></div></div>
+      <div class="mole-grid" id="moleGrid">${Array(9).fill(0).map((_,i)=>`<div class="mole-hole" id="mole${i}" onclick="whackMole(${i})"></div>`).join('')}</div>
+      <div class="game-msg" id="wMsg">WHACK THE MOLES!</div>
+      <button class="btn" onclick="whackInit()" style="margin-top:8px">RESTART</button>
+    </div>`;
+    window.whackInit=init;
+  }
+  function showMole(){if(!running)return;if(activeMole>=0){const o=document.getElementById('mole'+activeMole);if(o){o.textContent='';o.classList.remove('active')}}activeMole=Math.floor(Math.random()*9);const el=document.getElementById('mole'+activeMole);if(el){el.textContent='🐹';el.classList.add('active')}}
+  function tick(){if(!running)return;timeLeft--;const el=document.getElementById('wTime');const bar=document.getElementById('wBar');if(el)el.textContent=timeLeft+'s';if(bar)bar.style.width=(timeLeft/30*100)+'%';if(timeLeft<=0){running=false;clearInterval(interval);clearInterval(timerInt);if(activeMole>=0){const o=document.getElementById('mole'+activeMole);if(o){o.textContent='';o.classList.remove('active')}}const msg=document.getElementById('wMsg');if(msg)msg.textContent=`🏁 DONE! Score: ${score} | Misses: ${misses}`}}
+  window.whackMole=function(i){if(!running)return;if(i===activeMole){score++;document.getElementById('wScore').textContent=score;const el=document.getElementById('mole'+i);el.textContent='💥';el.classList.remove('active');el.classList.add('hit');setTimeout(()=>{el.textContent='';el.classList.remove('hit')},200);activeMole=-1}else{misses++;document.getElementById('wMisses').textContent=misses}};
+  stopFns.push(()=>{clearInterval(interval);clearInterval(timerInt);running=false});
+  init();
+}
+
+const games={snake:gameSnake,memory:gameMemory,reaction:gameReaction,guess:gameGuess,whack:gameWhack};
+</script>
+</body>
+</html>

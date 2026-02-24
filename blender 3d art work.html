@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Gallery — Lightbox</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080d15;
+    --glass: rgba(255,255,255,0.03);
+    --glass-border: rgba(255,255,255,0.07);
+    --accent: #4af4d0;
+    --accent2: #7b6ef6;
+    --accent3: #f4914a;
+    --accent4: #f46a9b;
+    --text: #e8eaf0;
+    --muted: #4a5568;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND: grid + right-side glow matching reference image ── */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    /* Fine blue-tinted grid */
+    background-image:
+      linear-gradient(rgba(90,130,200,0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(90,130,200,0.055) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  /* Radial glow — right side only, matching the reference */
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 65% at 100% 50%, rgba(20,55,130,0.38) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 30% at 85% 55%, rgba(15,40,100,0.22) 0%, transparent 60%);
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 50px 64px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: fadeDown 0.7s ease both;
+  }
+  .logo { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; }
+  .logo span { color: var(--muted); }
+  nav { display: flex; gap: 30px; }
+  nav a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  nav a:hover { color: var(--text); }
+
+  .hero { position: relative; z-index: 10; padding: 70px 64px 48px; animation: fadeUp 0.8s 0.15s ease both; }
+  .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent); }
+  h1 { font-size: clamp(40px, 5.5vw, 82px); font-weight: 800; line-height: 0.93; letter-spacing: -0.03em; }
+  h1 em { font-style: italic; font-weight: 400; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.25); }
+  .hero-meta { margin-top: 24px; display: flex; align-items: center; gap: 24px; }
+  .hero-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+  .hero-divider { width: 1px; height: 20px; background: var(--glass-border); }
+
+  .filters { position: relative; z-index: 10; padding: 0 64px 44px; display: flex; gap: 8px; flex-wrap: wrap; animation: fadeUp 0.8s 0.28s ease both; }
+  .filter-pill { background: var(--glass); border: 1px solid var(--glass-border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 7px 16px; border-radius: 100px; cursor: pointer; transition: all 0.25s; }
+  .filter-pill:hover, .filter-pill.active { background: rgba(74,244,208,0.07); border-color: rgba(74,244,208,0.3); color: var(--accent); }
+
+  /* ─── GALLERY ─── */
+  .gallery {
+    position: relative; z-index: 10;
+    padding: 0 64px 80px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 240px;
+    gap: 14px;
+  }
+  .c-7  { grid-column: span 7; }
+  .c-5  { grid-column: span 5; }
+  .c-4  { grid-column: span 4; }
+  .r-2  { grid-row: span 2; }
+
+  /* ─── CARD ─── */
+  .card {
+    position: relative; border-radius: 18px; overflow: hidden;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    cursor: pointer; animation: fadeUp 0.6s ease both;
+    transition: transform 0.45s cubic-bezier(0.23,1,0.32,1), border-color 0.3s, box-shadow 0.4s;
+  }
+  .card:hover { transform: translateY(-5px) scale(1.005); border-color: rgba(255,255,255,0.14); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+  .card:nth-child(1){animation-delay:0.35s} .card:nth-child(2){animation-delay:0.42s}
+  .card:nth-child(3){animation-delay:0.48s} .card:nth-child(4){animation-delay:0.54s}
+  .card:nth-child(5){animation-delay:0.60s} .card:nth-child(6){animation-delay:0.65s}
+
+  .card-visual { position: absolute; inset: 0; transition: transform 0.55s cubic-bezier(0.23,1,0.32,1); }
+  .card:hover .card-visual { transform: scale(1.07); }
+  .card-visual::after {
+    content: ''; position: absolute; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .card-visual:has(.card-image)::after { display: none; }
+
+  .card-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 1; display: block; }
+
+  .v1 { background: linear-gradient(135deg,#0c1a30,#1a0c2e,#08121e); }
+  .v2 { background: linear-gradient(135deg,#0a1e16,#1a2e18,#081410); }
+  .v3 { background: linear-gradient(135deg,#1e0c0a,#2e1a12,#14080a); }
+  .v4 { background: linear-gradient(135deg,#0c0a1e,#1a1430,#080a1e); }
+  .v5 { background: linear-gradient(135deg,#1a0e06,#2e1e0c,#140c08); }
+  .v6 { background: linear-gradient(135deg,#06101a,#101a30,#060810); }
+
+  .orb { position: absolute; border-radius: 50%; filter: blur(45px); opacity: 0.4; pointer-events: none; z-index: 2; }
+
+  .card-info {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8,13,21,0.97) 0%, rgba(8,13,21,0.3) 55%, transparent 100%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 24px; opacity: 0.88; transition: opacity 0.35s; z-index: 3;
+  }
+  .card:hover .card-info { opacity: 1; }
+
+  .card-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 6px; }
+  .tc { color: var(--accent); } .tp { color: var(--accent2); } .to { color: var(--accent3); } .tpk { color: var(--accent4); }
+  .card-title { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 6px; }
+  .card-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(232,234,240,0.45); line-height: 1.6; margin-bottom: 14px; }
+  .card-actions { display: flex; gap: 8px; align-items: center; transform: translateY(6px); opacity: 0; transition: all 0.35s cubic-bezier(0.23,1,0.32,1); }
+  .card:hover .card-actions { transform: translateY(0); opacity: 1; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 6px 13px; border-radius: 100px; border: 1px solid; transition: all 0.22s; }
+  .chip-main { background: rgba(74,244,208,0.1); border-color: rgba(74,244,208,0.32); color: var(--accent); }
+  .chip-main:hover { background: rgba(74,244,208,0.2); }
+  .chip-ghost { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+  .chip-ghost:hover { background: rgba(255,255,255,0.07); color: #fff; }
+
+  .card-idx { position: absolute; top: 18px; right: 18px; font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; pointer-events: none; z-index: 4; }
+  .zoom-hint { position: absolute; top: 18px; left: 18px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 13px; transform: scale(0); opacity: 0; transition: all 0.3s cubic-bezier(0.23,1,0.32,1); z-index: 4; }
+  .card:hover .zoom-hint { transform: scale(1); opacity: 1; }
+
+  /* ─── LIGHTBOX ─── */
+  .img-lightbox { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; pointer-events: none; opacity: 0; transition: opacity 0.35s cubic-bezier(0.23,1,0.32,1); }
+  .img-lightbox.open { opacity: 1; pointer-events: all; }
+
+  .img-lb-backdrop { position: absolute; inset: 0; background: rgba(2,5,10,0.94); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); cursor: zoom-out; }
+
+  .img-lb-container { position: relative; z-index: 2; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; gap: 18px; transform: scale(0.84) translateY(18px); transition: transform 0.45s cubic-bezier(0.23,1,0.32,1); }
+  .img-lightbox.open .img-lb-container { transform: scale(1) translateY(0); }
+
+  .img-lb-frame { border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 100px rgba(0,0,0,0.8); line-height: 0; background: #0a1020; }
+
+  .img-lb-image { display: block; max-width: 86vw; max-height: 76vh; width: auto; height: auto; object-fit: contain; }
+
+  .img-lb-fallback { width: min(680px,86vw); height: min(440px,58vh); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; position: relative; overflow: hidden; }
+  .img-lb-fallback::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px); background-size: 40px 40px; }
+  .fallback-orb { position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; }
+  .fallback-icon { position: relative; z-index: 1; font-size: 52px; opacity: 0.35; }
+  .fallback-label { position: relative; z-index: 1; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.45; }
+
+  .img-lb-meta { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 4px; gap: 16px; }
+  .img-lb-info { display: flex; flex-direction: column; gap: 4px; }
+  .img-lb-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.7; }
+  .img-lb-title { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+  .img-lb-close { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.65); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; flex-shrink: 0; }
+  .img-lb-close:hover { background: rgba(255,255,255,0.14); color: #fff; transform: rotate(90deg); }
+
+  .img-lb-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 10; width: 44px; height: 44px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.11); border-radius: 50%; color: rgba(255,255,255,0.6); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s; }
+  .img-lb-nav:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .img-lb-prev { left: 24px; } .img-lb-next { right: 24px; }
+
+  .img-lb-counter { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.1em; z-index: 10; display: flex; align-items: center; gap: 12px; }
+  .img-lb-dots { display: flex; gap: 6px; align-items: center; }
+  .img-lb-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s; cursor: pointer; }
+  .img-lb-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+
+  .img-lb-hint { position: fixed; bottom: 28px; right: 32px; font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; z-index: 10; }
+
+  footer { position: relative; z-index: 10; padding: 28px 64px; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(24px);  } to { opacity:1; transform:translateY(0); } }
+
+  @media (max-width: 860px) {
+    header, .hero, .filters, .gallery, footer { padding-left: 20px; padding-right: 20px; }
+    .c-7, .c-5, .c-4 { grid-column: span 12; }
+    .img-lb-prev { left: 8px; } .img-lb-next { right: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">PORT<span>.folio</span></div>
+  <nav><a href="index.html#projects">← Back</a></nav>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">Selected Projects 2024–25</div>
+  <h1>Built with<br><em>intention,</em><br>Shipped with craft.</h1>
+  <div class="hero-meta">
+    <span class="hero-count">6 Projects</span>
+    <div class="hero-divider"></div>
+    <span class="hero-count" style="color:var(--accent)">Click any card to explore ↗</span>
+  </div>
+</section>
+
+<div class="filters">
+  <button class="filter-pill active" data-filter="all">All</button>
+  <button class="filter-pill" data-filter="design">Design</button>
+  <button class="filter-pill" data-filter="dev">Development</button>
+  <button class="filter-pill" data-filter="motion">Motion</button>
+  <button class="filter-pill" data-filter="brand">Branding</button>
+  <button class="filter-pill" data-filter="3d"> 3D /images</button>
+</div>
+
+<div class="gallery">
+
+  <!-- 1 — tall hero card -->
+  <div class="card c-7 r-2" data-id="0">
+    <div class="card-visual v1">
+      <img src="untitled.png next level.png" alt="Voxel Haven – 3D Low Poly Architecture" class="card-image">
+      <div class="orb" style="width:220px;height:220px;background:rgba(74,244,208,0.22);top:-60px;right:-50px;"></div>
+      <div class="orb" style="width:140px;height:140px;background:rgba(123,110,246,0.18);bottom:20px;left:20px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">01</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag tc">Low-Poly Art</div>
+        <div class="card-title">Voxel Haven – 3D Low Poly Architecture</div>
+        <div class="card-sub">Low-poly stylized 3D architectural environment with cinematic lighting and modern minimal aesthetics.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card c-5" data-id="1">
+    <div class="card-visual v2">
+      <img src="untitled.png" alt="Midnight Velocity – Cinematic Car Render" class="card-image">
+      <div class="orb" style="width:180px;height:180px;background:rgba(74,244,208,0.2);bottom:-40px;left:-30px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">02</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag tc">Automotive Visualization</div>
+        <div class="card-title">Midnight Velocity – Cinematic Car Render</div>
+        <div class="card-sub">High-end cinematic 3D car render with dramatic night lighting and realistic reflections.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card c-5" data-id="2">
+    <div class="card-visual v3">
+      <img src="Image0195.png" alt="Midnight Velocity – Cinematic Car Render" class="card-image">
+      <div class="orb" style="width:160px;height:160px;background:rgba(244,145,74,0.3);top:-30px;right:-20px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">03</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag to">Automotive Visualization</div>
+        <div class="card-title">Midnight Velocity – Cinematic Car Render</div>
+        <div class="card-sub">High-end cinematic 3D car render with dramatic night lighting and realistic reflections.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="card c-4" data-id="3">
+    <div class="card-visual v4">
+      <img src="Image0000.png" alt="Neon Drift" class="card-image">
+      <div class="orb" style="width:160px;height:160px;background:rgba(123,110,246,0.3);top:-20px;left:-20px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">04</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag tp">3D Render</div>
+        <div class="card-title">Neon Drift</div>
+        <div class="card-sub">A dramatic night-time 3D render of a red sports car captured with strong reflections, city lights, and dynamic motion perspective.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="card c-4" data-id="4">
+    <div class="card-visual v5">
+      <img src="Image0091.png" alt="Cosmic Flow" class="card-image">
+      <div class="orb" style="width:140px;height:140px;background:rgba(244,145,74,0.25);bottom:-20px;right:-20px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">05</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag to">Abstract 3D/Digital art</div>
+        <div class="card-title">Cosmic Flow</div>
+        <div class="card-sub">An atmospheric abstract 3D scene with deep purple tones and immersive lighting, designed to create a futuristic and interactive visual experience.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="card c-4" data-id="5">
+    <div class="card-visual v6">
+      <img src="Screenshot 2026-02-20 024314.png" alt="Mono Terrain" class="card-image">
+      <div class="orb" style="width:150px;height:150px;background:rgba(74,144,244,0.25);top:-20px;right:-20px;"></div>
+    </div>
+    <div class="zoom-hint">⊕</div>
+    <div class="card-idx">06</div>
+    <div class="card-info">
+      <div>
+        <div class="card-tag tc">3D Environment</div>
+        <div class="card-title">Mono Terrain</div>
+        <div class="card-sub">A minimal monochrome 3D landscape featuring wireframe trees and structural elements, focused on depth, parallax, and technical precision.</div>
+        <div class="card-actions">
+          <span class="chip chip-main">Open ↗</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>© Vedant Ambigar 2026 — Portfolio</span>
+  <span>6 Projects · Built with love</span>
+</footer>
+
+<!-- ─── LIGHTBOX ─── -->
+<div class="img-lightbox" id="imgLightbox">
+  <div class="img-lb-backdrop" id="imgLbBackdrop"></div>
+  <button class="img-lb-nav img-lb-prev" id="imgLbPrev">‹</button>
+  <button class="img-lb-nav img-lb-next" id="imgLbNext">›</button>
+  <div class="img-lb-container">
+    <div class="img-lb-frame" id="imgLbFrame"></div>
+    <div class="img-lb-meta">
+      <div class="img-lb-info">
+        <div class="img-lb-tag" id="imgLbTag"></div>
+        <div class="img-lb-title" id="imgLbTitle"></div>
+      </div>
+      <button class="img-lb-close" id="imgLbClose">✕</button>
+    </div>
+  </div>
+  <div class="img-lb-counter">
+    <div class="img-lb-dots" id="imgLbDots"></div>
+    <span id="imgLbCounterText"></span>
+  </div>
+  <div class="img-lb-hint">ESC to close · ← → to navigate</div>
+</div>
+
+<script>
+const projects = [
+  { tag:'Low-Poly Art', accent:'#4af4d0', title:'Voxel Haven – 3D Low Poly Architecture',
+    image:'untitled.png next level.png',
+    bg:'linear-gradient(135deg,#0c1a30,#1a0c2e,#08121e)',
+    orbA:'rgba(74,244,208,0.35)', orbB:'rgba(123,110,246,0.22)' },
+
+  { tag:'Automotive Visualization', accent:'#4af4d0', title:'Midnight Velocity – Cinematic Car Render',
+    image:'untitled.png',
+    bg:'linear-gradient(135deg,#0a1e16,#1a2e18,#081410)',
+    orbA:'rgba(74,244,208,0.28)', orbB:'rgba(74,244,208,0.15)' },
+
+  { tag:'Automotive Visualization', accent:'#f4914a', title:'Midnight Velocity – Cinematic Car Render',
+    image:'Image0195.png',
+    bg:'linear-gradient(135deg,#1e0c0a,#2e1a12,#14080a)',
+    orbA:'rgba(244,145,74,0.38)', orbB:'rgba(244,145,74,0.2)' },
+
+  { tag:'3D Render', accent:'#7b6ef6', title:'Neon Drift',
+    image:'Image0000.png',
+    bg:'linear-gradient(135deg,#0c0a1e,#1a1430,#080a1e)',
+    orbA:'rgba(123,110,246,0.38)', orbB:'rgba(74,244,208,0.18)' },
+
+  { tag:'Abstract 3D/Digital art', accent:'#f4914a', title:'Cosmic Flow',
+    image:'Image0091.png',
+    bg:'linear-gradient(135deg,#1a1008,#2e2010,#140c08)',
+    orbA:'rgba(244,145,74,0.3)', orbB:'rgba(244,145,74,0.15)' },
+
+  { tag:'3D Environment', accent:'#4af4d0', title:'Mono Terrain',
+    image:'Screenshot 2026-02-20 024314.png',
+    bg:'linear-gradient(135deg,#06101a,#101a30,#060810)',
+    orbA:'rgba(74,144,244,0.3)', orbB:'rgba(74,244,208,0.2)' },
+];
+
+let current = 0;
+const imgLb        = document.getElementById('imgLightbox');
+const imgLbFrame   = document.getElementById('imgLbFrame');
+const imgLbTag     = document.getElementById('imgLbTag');
+const imgLbTitle   = document.getElementById('imgLbTitle');
+const imgLbDots    = document.getElementById('imgLbDots');
+const imgLbCounter = document.getElementById('imgLbCounterText');
+
+const iconMap = {
+  'Design System':'⬡','App Design':'◈','Motion Design':'◉',
+  'Brand Identity':'◈','3D / WebGL':'⬡','Development':'⟨⟩'
+};
+
+function buildDots() {
+  imgLbDots.innerHTML = '';
+  projects.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'img-lb-dot' + (i === current ? ' active' : '');
+    d.onclick = () => openLightbox(i);
+    imgLbDots.appendChild(d);
+  });
+}
+
+function renderFallback(p) {
+  const wrap = document.createElement('div');
+  wrap.className = 'img-lb-fallback';
+  wrap.style.background = p.bg;
+
+  const oA = document.createElement('div');
+  oA.className = 'fallback-orb';
+  oA.style.cssText = `width:280px;height:280px;background:${p.orbA};top:-80px;right:-60px;`;
+
+  const oB = document.createElement('div');
+  oB.className = 'fallback-orb';
+  oB.style.cssText = `width:200px;height:200px;background:${p.orbB};bottom:-60px;left:-40px;`;
+
+  const icon = document.createElement('div');
+  icon.className = 'fallback-icon';
+  icon.textContent = iconMap[p.tag] || '◉';
+
+  const lbl = document.createElement('div');
+  lbl.className = 'fallback-label';
+  lbl.style.color = p.accent;
+  lbl.textContent = p.tag;
+
+  wrap.append(oA, oB, icon, lbl);
+  imgLbFrame.appendChild(wrap);
+  imgLbFrame.style.border = '1px solid rgba(255,255,255,0.09)';
+}
+
+function openLightbox(idx) {
+  current = idx;
+  const p = projects[current];
+  imgLbFrame.innerHTML = '';
+  imgLbFrame.style.background = '#0a1020';
+  imgLbFrame.style.border = '1px solid rgba(255,255,255,0.1)';
+
+  if (p.image) {
+    const img = document.createElement('img');
+    img.className = 'img-lb-image';
+    img.alt = p.title;
+    img.onerror = () => { imgLbFrame.innerHTML = ''; renderFallback(p); };
+    img.src = p.image;
+    imgLbFrame.appendChild(img);
+  } else {
+    renderFallback(p);
+  }
+
+  imgLbTag.textContent  = p.tag;
+  imgLbTag.style.color  = p.accent;
+  imgLbTitle.textContent = p.title;
+  imgLbCounter.textContent = `${current + 1} / ${projects.length}`;
+  buildDots();
+
+  imgLb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  imgLb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => openLightbox(parseInt(card.dataset.id)));
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top)  / r.height - 0.5;
+    card.style.transform = `translateY(-5px) rotateX(${-y*5}deg) rotateY(${x*5}deg)`;
+    card.style.transformOrigin = 'center';
+  });
+  card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+});
+
+document.getElementById('imgLbClose').onclick   = closeLightbox;
+document.getElementById('imgLbBackdrop').onclick = closeLightbox;
+document.getElementById('imgLbPrev').onclick = () => openLightbox((current - 1 + projects.length) % projects.length);
+document.getElementById('imgLbNext').onclick = () => openLightbox((current + 1) % projects.length);
+
+document.addEventListener('keydown', e => {
+  if (!imgLb.classList.contains('open')) return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowRight') openLightbox((current + 1) % projects.length);
+  if (e.key === 'ArrowLeft')  openLightbox((current - 1 + projects.length) % projects.length);
+});
+
+document.querySelectorAll('.filter-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
