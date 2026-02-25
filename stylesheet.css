@@ -26,20 +26,6 @@
   background: #3b82f6;
   transform: translateX(6px);
 }
-
-.footer{
-  text-align: center;
-  padding: 15px;
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(8px);
-}
-
-
-.section:target .blur-container{
-  opacity: 1;
-  transform: scale(1);
-}
 /* ══════════════════════════════════════════
    GLOBAL VARS & RESETS FOR NEW SECTIONS
 ══════════════════════════════════════════ */
@@ -193,46 +179,7 @@ body::before {
 }
 .stat-icon { font-size: 20px; margin-bottom: 8px; display: block; animation: floatIcon 3s ease-in-out infinite; }
 
-/* Skills card in about */
-.skills-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  backdrop-filter: blur(14px);
-  opacity: 0; transform: translateY(24px);
-  transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
-}
-.skills-card.visible { opacity: 1; transform: translateY(0); }
 
-.card-title {
-  font-family: 'Space Mono', monospace;
-  font-size: 11px; color: var(--cyan);
-  letter-spacing: 0.15em; text-transform: uppercase;
-  margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
-}
-.card-title::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, var(--border), transparent);
-}
-
-.skill-item { margin-bottom: 16px; }
-.skill-item:last-child { margin-bottom: 0; }
-.skill-row { display: flex; justify-content: space-between; margin-bottom: 7px; }
-.skill-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.skill-pct  { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--cyan); }
-.skill-bar-bg {
-  height: 5px; background: rgba(255,255,255,0.06);
-  border-radius: 10px; overflow: hidden;
-}
-.skill-bar-fill {
-  height: 100%; border-radius: 10px;
-  background: linear-gradient(90deg, var(--blue), var(--cyan));
-  transform-origin: left; transform: scaleX(0);
-  transition: transform 1.1s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 0 8px rgba(0,212,255,0.35);
-}
 
 /* ══════════════════════════════════════════
    SKILLS SECTION
@@ -284,16 +231,6 @@ body::before {
 .tech-name {
   font-size: 15px; font-weight: 700; color: var(--text);
   display: block; margin-bottom: 6px;
-}
-.tech-bar-wrap {
-  height: 3px; background: rgba(255,255,255,0.06);
-  border-radius: 10px; overflow: hidden; margin-top: 14px;
-}
-.tech-bar {
-  height: 100%; border-radius: 10px;
-  background: linear-gradient(90deg, var(--blue), var(--cyan));
-  transform-origin: left; transform: scaleX(0);
-  transition: transform 1s cubic-bezier(0.16,1,0.3,1);
 }
 
 /* ══════════════════════════════════════════
