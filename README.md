@@ -7,13 +7,13 @@
 <img src="https://readme-typing-svg.demolab.com?font=Poppins&weight=600&size=24&duration=3000&pause=1000&center=true&vCenter=true&width=600&lines=Software+Developer;C%2B%2B+Programmer;Frontend+Developer;Building+Projects+and+Learning+Every+Day" alt="Typing SVG" />
 
 <p>
-  <a href="https://github.com/yourusername">
+  <a href="https://github.com/vedantambigar1">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
   </a>
-  <a href="https://linkedin.com/in/yourusername">
+  <a href="https://www.linkedin.com/in/vedant-ambigar-8b78b23b1?utm_source=share_via&utm_content=profile&utm_medium=member_android">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/>
   </a>
-  <a href="#">
+  <a href="https://vedantambigar1.github.io/vedant-ambigar-portfolio/">
     <img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white"/>
   </a>
 </p>
