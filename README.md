@@ -157,7 +157,7 @@ The system simplifies inventory tracking and management while demonstrating prac
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github)](https://github.com/vedantambigar1)
 
-[![LinkedIn](https://www.linkedin.com/in/vedant-ambigar-8b78b23b1?utm_source=share_via&utm_content=profile&utm_medium=member_android)]()
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/vedant-ambigar-8b78b23b1?utm_source=share_via&utm_content=profile&utm_medium=member_android)]
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord)](#)
 
